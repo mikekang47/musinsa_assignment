@@ -1,0 +1,6 @@
+CREATE TABLE category (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP,
+    last_modified_at TIMESTAMP
+); 
