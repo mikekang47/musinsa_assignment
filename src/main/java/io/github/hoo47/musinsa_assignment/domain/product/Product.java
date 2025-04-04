@@ -5,10 +5,7 @@ import java.math.BigDecimal;
 import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -30,4 +27,11 @@ public class Product extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String brand;
+
+    @Builder
+    public Product(BigDecimal price, Category category, String brand) {
+        this.price = price;
+        this.category = category;
+        this.brand = brand;
+    }
 } 
