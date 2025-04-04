@@ -1,6 +1,6 @@
-package com.musinsa.assignment.domain;
+package io.github.hoo47.musinsa_assignment.domain;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -17,11 +17,10 @@ import lombok.Getter;
 public abstract class BaseTimeEntity {
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant createdAt;
 
     @LastModifiedDate
-    @Column(name = "last_modified_at")
-    private LocalDateTime lastModifiedAt;
-
+    @Column(name = "last_modified_at", columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant lastModifiedAt;
 } 

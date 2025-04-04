@@ -1,6 +1,4 @@
-package com.musinsa.assignment.domain.category;
-
-import com.musinsa.assignment.domain.BaseTimeEntity;
+package io.github.hoo47.musinsa_assignment.domain.category;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
+
+import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
 
 @Entity
 @Getter
@@ -20,9 +20,19 @@ public class Category extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    protected Category() { } // JPA required no-args constructor
+    protected Category() { }
 
     public Category(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdAt=" + getCreatedAt() +
+                ", lastModifiedAt=" + getLastModifiedAt() +
+                '}';
     }
 } 
