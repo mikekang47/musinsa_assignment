@@ -25,14 +25,4 @@ public class Category extends BaseTimeEntity {
     public Category(String name) {
         this.name = name;
     }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", createdAt=" + getCreatedAt() +
-                ", lastModifiedAt=" + getLastModifiedAt() +
-                '}';
-    }
 } 
