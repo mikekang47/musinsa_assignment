@@ -1,7 +1,6 @@
 package io.github.hoo47.musinsa_assignment.application.product.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
