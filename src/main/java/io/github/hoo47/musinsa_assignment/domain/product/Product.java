@@ -4,13 +4,7 @@ import java.math.BigDecimal;
 
 import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "products")
 public class Product extends BaseTimeEntity {
 
     @Id
