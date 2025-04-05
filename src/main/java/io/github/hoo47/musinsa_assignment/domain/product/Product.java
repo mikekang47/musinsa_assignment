@@ -1,14 +1,12 @@
 package io.github.hoo47.musinsa_assignment.domain.product;
 
-import java.math.BigDecimal;
-
 import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
+import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -28,6 +26,26 @@ public class Product extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(nullable = false)
-    private String brand;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @Builder
+    public Product(BigDecimal price, Category category, Brand brand) {
+        this.price = price;
+        this.category = category;
+        this.brand = brand;
+    }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+
+    public void updateBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public void updatePrice(BigDecimal price) {
+        this.price = price;
+    }
 } 

@@ -1,6 +1,6 @@
 CREATE TABLE products
 (
-    id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
     price            DECIMAL(19, 2) NOT NULL,
     category_id      BIGINT         NOT NULL,
     brand            VARCHAR(255)   NOT NULL,

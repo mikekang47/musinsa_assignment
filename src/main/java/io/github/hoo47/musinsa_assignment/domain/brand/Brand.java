@@ -1,15 +1,17 @@
-package io.github.hoo47.musinsa_assignment.domain.category;
+package io.github.hoo47.musinsa_assignment.domain.brand;
 
 import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "brands")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Table(name = "categories")
-public class Category extends BaseTimeEntity {
+public class Brand extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +21,7 @@ public class Category extends BaseTimeEntity {
     private String name;
 
     @Builder
-    public Category(String name) {
+    public Brand(String name) {
         this.name = name;
     }
-}
+} 
