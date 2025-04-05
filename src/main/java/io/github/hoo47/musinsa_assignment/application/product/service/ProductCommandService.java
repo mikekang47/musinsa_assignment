@@ -10,7 +10,9 @@ import io.github.hoo47.musinsa_assignment.domain.category.Category;
 import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,10 +46,8 @@ public class ProductCommandService {
         return productRepository.save(product);
     }
 
-    @Transactional
     public Product updateProduct(Long productId, ProductUpdateRequest request) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
+        Product product = findProduct(productId); // TODO: Locking
 
         if (request.categoryId() != null) {
             Category category = categoryRepository.findById(request.categoryId())
@@ -69,5 +69,18 @@ public class ProductCommandService {
         }
 
         return product;
+    }
+
+    @Transactional
+    public Product deleteProduct(Long productId) {
+        Product product = findProduct(productId); // TODO: Locking
+
+        productRepository.deleteById(productId);
+        return product;
+    }
+
+    private Product findProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
     }
 }
