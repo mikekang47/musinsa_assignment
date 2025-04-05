@@ -36,4 +36,16 @@ public class Product extends BaseTimeEntity {
         this.category = category;
         this.brand = brand;
     }
+
+    public void updateCategory(Category category) {
+        this.category = category;
+    }
+
+    public void updateBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public void updatePrice(BigDecimal price) {
+        this.price = price;
+    }
 } 
