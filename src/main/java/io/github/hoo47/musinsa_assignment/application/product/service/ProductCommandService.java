@@ -10,9 +10,7 @@ import io.github.hoo47.musinsa_assignment.domain.category.Category;
 import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
-import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
