@@ -1,12 +1,8 @@
 package io.github.hoo47.musinsa_assignment.domain.category;
 
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Getter
@@ -21,4 +17,9 @@ public class Category extends BaseTimeEntity {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Builder
+    public Category(String name) {
+        this.name = name;
+    }
 }

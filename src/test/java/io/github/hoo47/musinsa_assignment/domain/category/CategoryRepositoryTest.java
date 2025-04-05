@@ -1,12 +1,14 @@
 package io.github.hoo47.musinsa_assignment.domain.category;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -15,11 +17,26 @@ class CategoryRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @BeforeEach
+    void setUp() {
+        categoryRepository.save(Category.builder()
+                .name("상의")
+                .build());
+
+        categoryRepository.save(Category.builder()
+                .name("아우터")
+                .build());
+    }
+
+    @AfterEach
+    void tearDown() {
+        categoryRepository.deleteAll();
+    }
+
     @Test
     @DisplayName("ID로 카테고리를 조회할 수 있다")
     void findById() {
         // given
-        // data.sql에 의해서 저장되어 있음.
         Long categoryId = 1L;
 
         // when
