@@ -287,4 +287,30 @@ class ProductCommandServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", BusinessErrorCode.BRAND_NOT_FOUND);
     }
+
+    @Test
+    @DisplayName("상품을 삭제할 수 있다")
+    void deleteProduct() {
+        // given
+        Long productId = testProduct.getId();
+
+        // when
+        Product deletedProduct = productCommandService.deleteProduct(productId);
+
+        // then
+        assertThat(deletedProduct).isNotNull();
+        assertThat(productRepository.findById(productId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 상품을 삭제할 수 없다")
+    void deleteNonExistentProduct() {
+        // given
+        Long nonExistentProductId = 999L;
+
+        // when & then
+        assertThatThrownBy(() -> productCommandService.deleteProduct(nonExistentProductId))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BusinessErrorCode.PRODUCT_NOT_FOUND);
+    }
 }

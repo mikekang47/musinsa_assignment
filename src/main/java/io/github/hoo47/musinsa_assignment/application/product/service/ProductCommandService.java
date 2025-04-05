@@ -44,10 +44,8 @@ public class ProductCommandService {
         return productRepository.save(product);
     }
 
-    @Transactional
     public Product updateProduct(Long productId, ProductUpdateRequest request) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
+        Product product = findProduct(productId); // TODO: Locking
 
         if (request.categoryId() != null) {
             Category category = categoryRepository.findById(request.categoryId())
@@ -69,5 +67,18 @@ public class ProductCommandService {
         }
 
         return product;
+    }
+
+    @Transactional
+    public Product deleteProduct(Long productId) {
+        Product product = findProduct(productId); // TODO: Locking
+
+        productRepository.deleteById(productId);
+        return product;
+    }
+
+    private Product findProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
     }
 }
