@@ -16,7 +16,7 @@ public enum BusinessErrorCode {
     BRAND_NOT_FOUND("BRAND-001", "존재하지 않는 브랜드입니다."),
 
     // Product
-    INVALID_PRICE("PRODUCT-001", "상품 가격은 0보다 커야 합니다."),
+    INVALID_PRICE("PRODUCT-001", "상품 가격은 0보다 크거나 같아야 합니다."),
     PRODUCT_NOT_FOUND("PRODUCT-002", "존재하지 않는 상품입니다.");
 
     private final String code;
