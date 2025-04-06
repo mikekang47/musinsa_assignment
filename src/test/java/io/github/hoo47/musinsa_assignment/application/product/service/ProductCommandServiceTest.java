@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 class ProductCommandServiceTest {
 
     @Autowired
@@ -48,7 +47,10 @@ class ProductCommandServiceTest {
     private Brand anotherBrand;
 
     @BeforeEach
+    @Transactional
     void setUp() {
+        deleteAllData();
+        
         // 카테고리 생성
         category = categoryRepository.save(Category.builder()
                 .name("상의")
@@ -76,13 +78,19 @@ class ProductCommandServiceTest {
     }
 
     @AfterEach
+    @Transactional
     void tearDown() {
-        productRepository.deleteAll();
-        brandRepository.deleteAll();
-        categoryRepository.deleteAll();
+        deleteAllData();
+    }
+
+    private void deleteAllData() {
+        productRepository.deleteAllInBatch();
+        brandRepository.deleteAllInBatch();
+        categoryRepository.deleteAllInBatch();
     }
 
     @Test
+    @Transactional
     @DisplayName("상품을 생성할 수 있다")
     void createProduct() {
         // given
@@ -103,6 +111,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("존재하지 않는 카테고리로 상품을 생성할 수 없다")
     void createProduct_CategoryNotFound() {
         // given
@@ -119,6 +128,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("존재하지 않는 브랜드로 상품을 생성할 수 없다")
     void createProduct_BrandNotFound() {
         // given
@@ -135,6 +145,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 가격은 0이상이어야 한다")
     void createProduct_InvalidPrice() {
         // given
@@ -151,6 +162,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 가격을 0원으로 생성할 수 있다")
     void createProduct_ZeroPrice() {
         // given
@@ -168,6 +180,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 가격을 수정할 수 있다")
     void updatePrice() {
         // given
@@ -181,6 +194,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 카테고리를 수정할 수 있다")
     void updateCategory() {
         // given
@@ -195,6 +209,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 브랜드를 수정할 수 있다")
     void updateBrand() {
         // given
@@ -209,6 +224,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("여러 필드를 동시에 수정할 수 있다")
     void updateMultipleFields() {
         // given
@@ -228,6 +244,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("존재하지 않는 상품은 수정할 수 없다")
     void updateNonExistentProduct() {
         // given
@@ -240,6 +257,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 가격을 0원으로 수정할 수 있다")
     void updatePrice_Zero() {
         // given
@@ -253,6 +271,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품 가격을 음수로 수정할 수 없다")
     void updateWithInvalidPrice() {
         // given
@@ -265,6 +284,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("존재하지 않는 카테고리로 수정할 수 없다")
     void updateWithNonExistentCategory() {
         // given
@@ -277,6 +297,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("존재하지 않는 브랜드로 수정할 수 없다")
     void updateWithNonExistentBrand() {
         // given
@@ -289,6 +310,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("상품을 삭제할 수 있다")
     void deleteProduct() {
         // given
@@ -303,6 +325,7 @@ class ProductCommandServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("존재하지 않는 상품을 삭제할 수 없다")
     void deleteNonExistentProduct() {
         // given
