@@ -14,6 +14,7 @@ public enum BusinessErrorCode {
 
     // Brand
     BRAND_NOT_FOUND("BRAND-001", "존재하지 않는 브랜드입니다."),
+    INVALID_BRAND_NAME("BRAND-002", "브랜드 이름은 비어있을 수 없습니다."),
 
     // Product
     INVALID_PRICE("PRODUCT-001", "상품 가격은 0보다 크거나 같아야 합니다."),
