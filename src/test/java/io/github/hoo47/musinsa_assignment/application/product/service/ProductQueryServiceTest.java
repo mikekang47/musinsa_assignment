@@ -126,4 +126,4 @@ class ProductQueryServiceTest {
         assertThat(outerProducts.get(1).brandName()).isEqualTo("B");
         assertThat(outerProducts.get(1).price()).isEqualTo(BigDecimal.valueOf(40000));
     }
-} 
+}

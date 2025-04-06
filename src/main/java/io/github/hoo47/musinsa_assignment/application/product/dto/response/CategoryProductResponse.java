@@ -1,8 +1,8 @@
 package io.github.hoo47.musinsa_assignment.application.product.dto.response;
 
-import java.math.BigDecimal;
-
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
+
+import java.math.BigDecimal;
 
 public record CategoryProductResponse(
         String categoryName,
@@ -16,4 +16,4 @@ public record CategoryProductResponse(
                 product.getPrice()
         );
     }
-} 
+}
