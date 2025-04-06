@@ -32,11 +32,25 @@ public class BrandCommandService {
             throw new BusinessException(BusinessErrorCode.INVALID_BRAND_NAME);
         }
 
-        Brand brand = brandRepository.findById(brandId)
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
+        Brand brand = findBrand(brandId);
 
         brand.updateName(request.name());
 
         return brand;
     }
+
+    public Brand deleteBrand(Long brandId) {
+        Brand brand = findBrand(brandId);
+
+        brandRepository.deleteById(brandId);
+
+        return brand;
+    }
+
+    // TODO: Implement locking mechanism
+    private Brand findBrand(Long brandId) {
+        return brandRepository.findById(brandId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
+    }
+
 }

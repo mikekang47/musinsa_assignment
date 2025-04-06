@@ -4,6 +4,7 @@ import io.github.hoo47.musinsa_assignment.application.brand.dto.BrandUpdateReque
 import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandCreateRequest;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
+import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,11 @@ class BrandCommandServiceTest {
 
     @Autowired
     private BrandCommandService brandCommandService;
+    @Autowired
+    private BrandRepository brandRepository;
 
     @Test
-    @DisplayName("브랜드 생성 테스트")
+    @DisplayName("브랜드 생성할 수 있다.")
     void createBrand() {
         // given
         String brandName = "Test Brand";
@@ -91,6 +94,37 @@ class BrandCommandServiceTest {
 
         // when & then
         assertThatThrownBy(() -> brandCommandService.updateBrand(notExistentBrandId, request))
+                .isInstanceOf(BusinessException.class)
+                .hasFieldOrPropertyWithValue("errorCode", BusinessErrorCode.BRAND_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("브랜드를 삭제할 수 있다.")
+    void deleteBrand() {
+        // given
+        String brandName = "Test Brand";
+        var brand = brandCommandService.createBrand(new BrandCreateRequest(brandName));
+
+        // when
+        var deletedBrand = brandCommandService.deleteBrand(brand.getId());
+
+        // then
+        assertThat(deletedBrand.getId()).isEqualTo(brand.getId());
+        assertThat(deletedBrand.getName()).isEqualTo(brand.getName());
+
+        brandRepository.findById(brand.getId()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("브랜드 삭제 시 존재하지 않는 브랜드 ID로 요청하면 예외가 발생한다.")
+    void deleteBrandWithNonExistentId() {
+        // given
+        String brandName = "Test Brand";
+        var brand = brandCommandService.createBrand(new BrandCreateRequest(brandName));
+        var notExistentBrandId = brand.getId() + 1;
+
+        // when & then
+        assertThatThrownBy(() -> brandCommandService.deleteBrand(notExistentBrandId))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", BusinessErrorCode.BRAND_NOT_FOUND);
     }
