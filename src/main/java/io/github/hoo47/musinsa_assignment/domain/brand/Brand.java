@@ -24,4 +24,8 @@ public class Brand extends BaseTimeEntity {
     public Brand(String name) {
         this.name = name;
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 } 
