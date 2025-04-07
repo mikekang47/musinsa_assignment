@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductResponse;
+import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductSummaryResponse;
 import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;
@@ -97,33 +97,16 @@ class ProductQueryServiceTest {
     }
 
     @Test
-    @Transactional
-    @DisplayName("카테고리별 상품을 조회할 수 있다")
+    @DisplayName("카테고리에서 가장 저렴한 상품을 조회할 수 있다")
     void findAllCategoryProducts() {
-        // when
-        List<CategoryProductResponse> responses = productQueryService.findAllCategoryProducts();
+        List<Product> products = productQueryService.getCheapestProductInCategory(category1.getId());
 
-        // then
-        assertThat(responses).hasSize(4);
-        
-        // 상의 카테고리 검증
-        var upperProducts = responses.stream()
-                .filter(r -> r.categoryName().equals("상의"))
-                .toList();
-        assertThat(upperProducts).hasSize(2);
-        assertThat(upperProducts.get(0).brandName()).isEqualTo("A");
-        assertThat(upperProducts.get(0).price()).isEqualTo(BigDecimal.valueOf(10000));
-        assertThat(upperProducts.get(1).brandName()).isEqualTo("B");
-        assertThat(upperProducts.get(1).price()).isEqualTo(BigDecimal.valueOf(20000));
-        
-        // 아우터 카테고리 검증
-        var outerProducts = responses.stream()
-                .filter(r -> r.categoryName().equals("아우터"))
-                .toList();
-        assertThat(outerProducts).hasSize(2);
-        assertThat(outerProducts.get(0).brandName()).isEqualTo("A");
-        assertThat(outerProducts.get(0).price()).isEqualTo(BigDecimal.valueOf(30000));
-        assertThat(outerProducts.get(1).brandName()).isEqualTo("B");
-        assertThat(outerProducts.get(1).price()).isEqualTo(BigDecimal.valueOf(40000));
+        Product product = products.get(0);
+
+        assertThat(products).isNotEmpty();
+        assertThat(products.size()).isEqualTo(1);
+        assertThat(product.getCategory().getId()).isEqualTo(category1.getId());
+        assertThat(product.getBrand().getId()).isEqualTo(brand1.getId());
+        assertThat(product.getPrice().compareTo(BigDecimal.valueOf(10000))).isZero();
     }
 }

@@ -1,13 +1,14 @@
 package io.github.hoo47.musinsa_assignment.application.product.service;
 
-import io.github.hoo47.musinsa_assignment.application.category.service.CategoryQueryService;
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductResponse;
-import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import io.github.hoo47.musinsa_assignment.application.category.service.CategoryQueryService;
+import io.github.hoo47.musinsa_assignment.domain.product.Product;
+import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,13 +19,8 @@ public class ProductQueryService {
     private final ProductRepository productRepository;
     private final CategoryQueryService categoryQueryService;
 
-    public List<CategoryProductResponse> findAllCategoryProducts() {
-        return categoryQueryService.getAllCategories().stream()
-                .flatMap(category -> productRepository.findByCategoryWithFetch(category.getId())
-                        .stream()
-                        .map(CategoryProductResponse::from))
-                .toList();
+    public List<Product> getCheapestProductInCategory(Long categoryId) {
+        return productRepository.findTop1ByCategoryIdOrderByPriceAsc(categoryId);
     }
-
     // TODO: Implement query methods
 } 
