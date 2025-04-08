@@ -47,6 +47,12 @@ class ProductRepositoryTest {
                 .category(category1)
                 .brand(brand1)
                 .build());
+
+        productRepository.save(Product.builder()
+                .price(BigDecimal.valueOf(30000))
+                .category(category1)
+                .brand(brand1)
+                .build());
     }
 
     @Test
@@ -59,6 +65,21 @@ class ProductRepositoryTest {
         assertThat(products).isNotEmpty();
         assertThat(products.size()).isGreaterThan(0);
 
+        assertThat(products.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("주어진 카테고리들에 속한 가장 저렴한 상품을 조회할 수 있다")
+    void findTop1ByCategoryIdOrderByPriceAscTest() {
+        // given
+        Category category = categoryRepository.findAll().get(0);
+
+        // when
+        List<Product> products = productRepository.findCheapestProductsByCategory(List.of(category.getId()));
+
+        // then
+        assertThat(products).isNotEmpty();
         assertThat(products.size()).isEqualTo(1);
+        assertThat(products.get(0).getPrice()).isEqualTo(BigDecimal.valueOf(10000));
     }
 } 

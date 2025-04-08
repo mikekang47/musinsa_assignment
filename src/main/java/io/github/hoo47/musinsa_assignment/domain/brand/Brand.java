@@ -2,14 +2,12 @@ package io.github.hoo47.musinsa_assignment.domain.brand;
 
 import io.github.hoo47.musinsa_assignment.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "brands")
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Brand extends BaseTimeEntity {
 
