@@ -10,7 +10,9 @@ public record CategoryProductSummaryResponse(
 
 
     public record CategoryProductPriceInfo(
+            Long categoryId,
             String categoryName,
+            Long brandId,
             String brandName,
             BigDecimal price
     ) {

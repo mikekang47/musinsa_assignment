@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.hoo47.musinsa_assignment.application.category.service.CategoryQueryService;
 import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductSummaryResponse;
 import io.github.hoo47.musinsa_assignment.application.product.service.ProductQueryService;
+import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,9 @@ public class CategoryProductPriceUsecase {
                     Brand brand = product.getBrand();
                     BigDecimal price = product.getPrice();
                     return new CategoryProductSummaryResponse.CategoryProductPriceInfo(
+                            category.getId(),
                             category.getName(),
+                            brand.getId(),
                             brand.getName(),
                             price
                     );

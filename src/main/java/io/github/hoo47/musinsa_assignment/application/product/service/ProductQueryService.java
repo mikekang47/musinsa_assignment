@@ -18,5 +18,4 @@ public class ProductQueryService {
     public List<Product> getCheapestProductInCategory(List<Long> categoryIds) {
         return productRepository.findCheapestProductsByCategory(categoryIds);
     }
-    // TODO: Implement query methods
-} 
+}
