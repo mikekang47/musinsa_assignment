@@ -97,16 +97,19 @@ class ProductQueryServiceTest {
     }
 
     @Test
-    @DisplayName("카테고리에서 가장 저렴한 상품을 조회할 수 있다")
+    @DisplayName("모든 카테고리에서 가장 저렴한 상품들을 조회할 수 있다")
     void findAllCategoryProducts() {
-        List<Product> products = productQueryService.getCheapestProductInCategory(category1.getId());
+        List<Product> products = productQueryService.getCheapestProductInCategory(List.of(category1.getId(), category2.getId()));
 
         Product product = products.get(0);
 
         assertThat(products).isNotEmpty();
-        assertThat(products.size()).isEqualTo(1);
+        assertThat(products.size()).isEqualTo(2);
         assertThat(product.getCategory().getId()).isEqualTo(category1.getId());
         assertThat(product.getBrand().getId()).isEqualTo(brand1.getId());
         assertThat(product.getPrice().compareTo(BigDecimal.valueOf(10000))).isZero();
+
+        Product product1 = products.get(1);
+        assertThat(product1.getPrice().compareTo(BigDecimal.valueOf(30000))).isZero();
     }
 }
