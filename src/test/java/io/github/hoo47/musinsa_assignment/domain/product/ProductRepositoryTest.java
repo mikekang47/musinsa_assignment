@@ -69,13 +69,13 @@ class ProductRepositoryTest {
     }
 
     @Test
-    @DisplayName("카테고리에 속한 가장 저렴한 상품을 조회할 수 있다")
+    @DisplayName("주어진 카테고리들에 속한 가장 저렴한 상품을 조회할 수 있다")
     void findTop1ByCategoryIdOrderByPriceAscTest() {
         // given
         Category category = categoryRepository.findAll().get(0);
 
         // when
-        List<Product> products = productRepository.findTop1ByCategoryIdOrderByPriceAsc(category.getId());
+        List<Product> products = productRepository.findCheapestProductsByCategory(List.of(category.getId()));
 
         // then
         assertThat(products).isNotEmpty();
