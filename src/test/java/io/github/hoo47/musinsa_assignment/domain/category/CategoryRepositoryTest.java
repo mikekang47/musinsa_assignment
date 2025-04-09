@@ -58,4 +58,17 @@ class CategoryRepositoryTest {
         // then
         assertThat(category).isEmpty();
     }
+
+    @Test
+    @DisplayName("count")
+    void count() {
+        // given
+        long expectedCount = 2L;
+
+        // when
+        long count = categoryRepository.count();
+
+        // then
+        assertThat(count).isEqualTo(expectedCount);
+    }
 } 

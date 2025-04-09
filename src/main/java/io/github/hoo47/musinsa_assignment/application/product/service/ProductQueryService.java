@@ -2,6 +2,7 @@ package io.github.hoo47.musinsa_assignment.application.product.service;
 
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
+import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,5 +18,9 @@ public class ProductQueryService {
 
     public List<Product> getCheapestProductInCategory(List<Long> categoryIds) {
         return productRepository.findCheapestProductsByCategory(categoryIds);
+    }
+
+    public List<BrandCategoryPriceInfo> findCheapestProductsGroupByBrandAndCategory() {
+        return productRepository.findCheapestProductsGroupByBrandAndCategory();
     }
 }
