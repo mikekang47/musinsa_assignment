@@ -5,24 +5,30 @@ import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandCre
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
 import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
-@Transactional
 @SpringBootTest
+@ActiveProfiles("test")
 class BrandCommandServiceTest {
 
     @Autowired
     private BrandCommandService brandCommandService;
     @Autowired
     private BrandRepository brandRepository;
+
+    @AfterEach
+    void tearDown() {
+        brandRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("브랜드 생성할 수 있다.")
