@@ -18,4 +18,8 @@ public class CategoryQueryService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+
+    public long getCategoryCount() {
+        return categoryRepository.count();
+    }
 }
