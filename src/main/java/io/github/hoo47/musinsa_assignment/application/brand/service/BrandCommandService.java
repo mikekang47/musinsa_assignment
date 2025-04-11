@@ -1,7 +1,7 @@
-package io.github.hoo47.musinsa_assignment.application.brand;
+package io.github.hoo47.musinsa_assignment.application.brand.service;
 
-import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandUpdateRequest;
 import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandCreateRequest;
+import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandUpdateRequest;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
 import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
