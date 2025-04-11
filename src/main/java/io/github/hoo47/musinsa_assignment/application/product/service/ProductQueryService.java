@@ -23,4 +23,12 @@ public class ProductQueryService {
     public List<BrandCategoryPriceInfo> findCheapestProductsGroupByBrandAndCategory() {
         return productRepository.findCheapestProductsGroupByBrandAndCategory();
     }
+
+    public List<Product> findCheapestByCategoryName(String categoryName) {
+        return productRepository.findCheapestByCategoryName(categoryName);
+    }
+
+    public List<Product> findMostExpensiveByCategoryName(String categoryName) {
+        return productRepository.findMostExpensiveByCategoryName(categoryName);
+    }
 }
