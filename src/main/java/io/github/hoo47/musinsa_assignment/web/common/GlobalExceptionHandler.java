@@ -20,15 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         ErrorResponse response = ErrorResponse.of(e.getErrorCode());
-        return new ResponseEntity<>(response, determineHttpStatus(e.getErrorCode()));
-    }
-
-    private HttpStatus determineHttpStatus(BusinessErrorCode errorCode) {
-        return switch (errorCode) {
-            case CATEGORY_NOT_FOUND, PRODUCT_NOT_FOUND -> HttpStatus.NOT_FOUND;
-            case INVALID_INPUT, INVALID_PRICE -> HttpStatus.BAD_REQUEST;
-            default -> HttpStatus.INTERNAL_SERVER_ERROR;
-        };
+        return new ResponseEntity<>(response, e.getErrorCode().getHttpStatus());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
