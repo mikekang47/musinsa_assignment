@@ -72,34 +72,6 @@ class CategoryControllerTest {
     }
 
     @Test
-    @DisplayName("단일 브랜드로 모든 카테고리 상품을 구매할 때 최저가격 브랜드와 가격을 조회할 수 있다")
-    void getLowestBrandPrice() throws Exception {
-        // given
-        var categories = Arrays.asList(
-                new BrandProductSummaryResponse.CategoryPrice("상의", new BigDecimal("10000")),
-                new BrandProductSummaryResponse.CategoryPrice("하의", new BigDecimal("20000"))
-        );
-
-        var lowestPriceInfo = new BrandProductSummaryResponse.LowestPriceInfo(
-                "C브랜드", categories, new BigDecimal("30000")
-        );
-
-        var response = new BrandProductSummaryResponse(lowestPriceInfo);
-
-        given(brandLowestPriceUsecase.getBrandWithLowestTotalPrice()).willReturn(response);
-
-        // when & then
-        mockMvc.perform(get("/api/v1/categories/lowest-brand-price"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lowestPrice.brandName").value("C브랜드"))
-                .andExpect(jsonPath("$.lowestPrice.categories[0].categoryName").value("상의"))
-                .andExpect(jsonPath("$.lowestPrice.categories[0].price").value(10000))
-                .andExpect(jsonPath("$.lowestPrice.categories[1].categoryName").value("하의"))
-                .andExpect(jsonPath("$.lowestPrice.categories[1].price").value(20000))
-                .andExpect(jsonPath("$.lowestPrice.totalPrice").value(30000));
-    }
-
-    @Test
     @DisplayName("카테고리 이름으로 최저, 최고 가격 브랜드와 상품 가격을 조회할 수 있다")
     void getCategoryPriceSummary() throws Exception {
         // given

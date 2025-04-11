@@ -15,18 +15,24 @@ import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
 import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/brands")
 @RestController
-@RequiredArgsConstructor
 public class BrandController {
 
     private final BrandCommandService brandCommandService;
     private final BrandLowestPriceUsecase brandLowestPriceUsecase;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public BrandController(BrandCommandService brandCommandService, BrandLowestPriceUsecase brandLowestPriceUsecase) {
+        this.brandCommandService = brandCommandService;
+        this.brandLowestPriceUsecase = brandLowestPriceUsecase;
+        this.objectMapper = new ObjectMapper() ;
+    }
+
+
 
     @GetMapping("/lowest-price")
     public BrandProductSummaryResponse getLowestPriceBrand() {
