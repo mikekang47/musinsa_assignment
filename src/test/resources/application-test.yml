@@ -22,6 +22,11 @@ spring:
   test:
     database:
       replace: none
+  cache:
+    type: none
+  data:
+    redis:
+      enabled: false
 
 logging:
   level:

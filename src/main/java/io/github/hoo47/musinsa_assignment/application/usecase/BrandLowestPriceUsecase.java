@@ -5,6 +5,7 @@ import io.github.hoo47.musinsa_assignment.application.product.dto.response.Brand
 import io.github.hoo47.musinsa_assignment.application.product.service.ProductQueryService;
 import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,9 +26,11 @@ public class BrandLowestPriceUsecase {
     /**
      * Find the brand with the lowest total price across all categories.
      * This method is optimized to use efficient data structures and stream operations.
+     * 결과는 캐시에 저장되어 반복 요청 시 DB 쿼리 없이 빠르게 응답합니다.
      *
      * @return a summary of the brand with the lowest total price
      */
+    @Cacheable(value = "brandLowestPriceCache")
     public BrandProductSummaryResponse getBrandWithLowestTotalPrice() {
         // 1. Get minimum price products by brand and category
         List<BrandCategoryPriceInfo> results = productQueryService.findCheapestProductsGroupByBrandAndCategory();
