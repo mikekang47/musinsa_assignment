@@ -32,7 +32,7 @@ public class BrandCommandService {
             throw new BusinessException(BusinessErrorCode.INVALID_BRAND_NAME);
         }
 
-        Brand brand = findBrand(brandId);
+        Brand brand = findBrandWithLock(brandId);
 
         brand.updateName(request.name());
 
@@ -40,16 +40,28 @@ public class BrandCommandService {
     }
 
     public Brand deleteBrand(Long brandId) {
-        Brand brand = findBrand(brandId);
+        Brand brand = findBrandWithLock(brandId);
 
         brandRepository.deleteById(brandId);
 
         return brand;
     }
 
-    // TODO: Implement locking mechanism
+    /**
+     * Retrieves a brand by its ID.
+     * Used for read-only operations.
+     */
     private Brand findBrand(Long brandId) {
         return brandRepository.findById(brandId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
+    }
+
+    /**
+     * Retrieves a brand by its ID with a pessimistic read lock.
+     * Used for update and delete operations to prevent concurrent modifications.
+     */
+    private Brand findBrandWithLock(Long brandId) {
+        return brandRepository.findByIdWithReadLock(brandId)
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
     }
 

@@ -36,7 +36,7 @@ public class ProductCommandService {
             throw new BusinessException(BusinessErrorCode.INVALID_PRICE);
         }
 
-        var product = Product.builder()
+        Product product = Product.builder()
                 .price(request.price())
                 .category(category)
                 .brand(brand)
@@ -45,16 +45,16 @@ public class ProductCommandService {
     }
 
     public Product updateProduct(Long productId, ProductUpdateRequest request) {
-        Product product = findProduct(productId); // TODO: Locking
+        Product product = findProductWithLock(productId);
 
         if (request.categoryId() != null) {
-            Category category = categoryRepository.findById(request.categoryId())
+            Category category = categoryRepository.findByIdWithReadLock(request.categoryId())
                     .orElseThrow(() -> new BusinessException(BusinessErrorCode.CATEGORY_NOT_FOUND));
             product.updateCategory(category);
         }
 
         if (request.brandId() != null) {
-            Brand brand = brandRepository.findById(request.brandId())
+            Brand brand = brandRepository.findByIdWithReadLock(request.brandId())
                     .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
             product.updateBrand(brand);
         }
@@ -71,14 +71,27 @@ public class ProductCommandService {
 
     @Transactional
     public Product deleteProduct(Long productId) {
-        Product product = findProduct(productId); // TODO: Locking
+        Product product = findProductWithLock(productId);
 
         productRepository.deleteById(productId);
         return product;
     }
 
+    /**
+     * Retrieves a product by its ID.
+     * Used for read-only operations.
+     */
     private Product findProduct(Long productId) {
         return productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
+    }
+
+    /**
+     * Retrieves a product by its ID with a pessimistic read lock.
+     * Used for update and delete operations to prevent concurrent modifications.
+     */
+    private Product findProductWithLock(Long productId) {
+        return productRepository.findByIdWithReadLock(productId)
                 .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
     }
 }
