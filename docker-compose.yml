@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - musinsa-network
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - musinsa-network
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+
+networks:
+  musinsa-network:
+    driver: bridge
+
+volumes:
+  redis-data:
