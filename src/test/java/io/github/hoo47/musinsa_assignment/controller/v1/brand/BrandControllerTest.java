@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandCreateRequest;
 import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandUpdateRequest;
 import io.github.hoo47.musinsa_assignment.application.brand.service.BrandCommandService;
+import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
+import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
 import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BrandController.class)
@@ -114,5 +115,44 @@ class BrandControllerTest {
                         .contentType("application/json-patch+json")
                         .content(patchWithEmptyName))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("should return not found when brand does not exist")
+    void shouldReturnNotFoundWhenBrandDoesNotExist() throws Exception {
+        Long brandId = 999L;
+        String validPatch = "[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Updated Brand\"}]";
+
+        // Simulate that the brand does not exist
+        given(brandCommandService.updateBrand(brandId, new BrandUpdateRequest("Updated Brand")))
+                .willThrow(new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
+
+        mockMvc.perform(patch("/api/v1/brands/{id}", brandId)
+                        .contentType("application/json-patch+json")
+                        .content(validPatch))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("should delete brand when brand exists")
+    void shouldDeleteBrandWhenBrandExists() throws Exception {
+        Long brandId = 1L;
+
+        // when/then
+        mockMvc.perform(delete("/api/v1/brands/{id}", brandId))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("should return not found when brand does not exist")
+    void deleteBrandShouldReturnNotFoundWhenBrandDoesNotExist() throws Exception {
+        Long brandId = 999L;
+
+        // Simulate that the brand does not exist
+        given(brandCommandService.deleteBrand(brandId))
+                .willThrow(new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
+
+        mockMvc.perform(delete("/api/v1/brands/{id}", brandId))
+                .andExpect(status().isNotFound());
     }
 }

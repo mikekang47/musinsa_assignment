@@ -60,4 +60,10 @@ public class BrandController {
 
         return null;
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        brandCommandService.deleteBrand(id);
+    }
 }
