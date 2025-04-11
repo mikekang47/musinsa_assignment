@@ -26,9 +26,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 캐시 설정을 담당하는 클래스
- * Redis 캐시를 사용하여 성능을 향상시킵니다.
- * 테스트 환경에서는 적용되지 않음
+ * Cache configuration class
+ * Enhances performance using Redis cache.
+ * Not applied in test environment
  */
 @Slf4j
 @Configuration
@@ -52,16 +52,16 @@ public class CacheConfig implements CachingConfigurer {
     private String clientName;
     
     /**
-     * Redis 연결 팩토리를 설정합니다.
-     * 명시적인 타임아웃 설정으로 연결 실패 시 빠르게 오류를 감지합니다.
+     * Sets up Redis connection factory.
+     * Detects connection failures quickly with explicit timeout settings.
      *
-     * @return Redis 연결 팩토리
+     * @return Redis connection factory
      */
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
         
-        // 명시적 타임아웃 설정 및 클라이언트 이름 설정
+        // Explicit timeout settings and client name configuration
         LettuceClientConfiguration clientConfig = LettucePoolingClientConfiguration.builder()
                 .commandTimeout(Duration.ofMillis(connectionTimeout))
                 .clientName(clientName)
@@ -71,15 +71,15 @@ public class CacheConfig implements CachingConfigurer {
     }
     
     /**
-     * Redis 캐시 매니저를 설정합니다.
-     * 커머스 서비스 특성상 데이터가 자주 변경될 수 있으므로 짧은 TTL을 사용합니다.
+     * Configures Redis cache manager.
+     * Uses short TTL because data in commerce services may change frequently.
      * 
-     * @param redisConnectionFactory Redis 연결 팩토리
-     * @return 설정된 Redis 캐시 매니저
+     * @param redisConnectionFactory Redis connection factory
+     * @return Configured Redis cache manager
      */
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-        // Redis 캐시 기본 설정
+        // Basic Redis cache configuration
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(timeToLive))
                 .serializeKeysWith(
@@ -90,25 +90,25 @@ public class CacheConfig implements CachingConfigurer {
                 )
                 .disableCachingNullValues();
         
-        // 개별 캐시 설정 - 커머스 서비스에 맞게 TTL 설정
+        // Individual cache configuration for commerce service - Setting appropriate TTL
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withCacheConfiguration("priceSummaryCache", 
-                        defaultConfig.entryTtl(Duration.ofSeconds(30))) // 30초
+                        defaultConfig.entryTtl(Duration.ofSeconds(30))) // 30 seconds
                 .withCacheConfiguration("categoryPricingCache", 
-                        defaultConfig.entryTtl(Duration.ofSeconds(20))) // 20초
+                        defaultConfig.entryTtl(Duration.ofSeconds(20))) // 20 seconds
                 .withCacheConfiguration("brandLowestPriceCache", 
-                        defaultConfig.entryTtl(Duration.ofSeconds(60))) // 1분
+                        defaultConfig.entryTtl(Duration.ofSeconds(60))) // 1 minute
                 .withCacheConfiguration("priceInfoCache", 
-                        defaultConfig.entryTtl(Duration.ofSeconds(120))) // 2분 - 새로 추가된 캐시
+                        defaultConfig.entryTtl(Duration.ofSeconds(120))) // 2 minutes - Newly added cache
                 .build();
     }
     
     /**
-     * Redis 템플릿을 설정합니다.
+     * Configures Redis template.
      * 
-     * @param redisConnectionFactory Redis 연결 팩토리
-     * @return 설정된 Redis 템플릿
+     * @param redisConnectionFactory Redis connection factory
+     * @return Configured Redis template
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -120,8 +120,8 @@ public class CacheConfig implements CachingConfigurer {
     }
     
     /**
-     * 캐시 에러 핸들러를 설정합니다.
-     * Redis 연결 실패 등의 오류가 발생하면 원래 메서드를 실행합니다.
+     * Configures cache error handler.
+     * Executes the original method when errors occur such as Redis connection failures.
      */
     @Override
     public CacheErrorHandler errorHandler() {
@@ -129,8 +129,8 @@ public class CacheConfig implements CachingConfigurer {
     }
     
     /**
-     * 캐시 에러 처리를 위한 커스텀 핸들러
-     * 캐시 조회/갱신 실패 시 원래 메서드를 실행하도록 합니다.
+     * Custom handler for cache error handling
+     * Executes the original method when cache lookup/update fails.
      */
     public static class CustomCacheErrorHandler extends SimpleCacheErrorHandler {
         @Override

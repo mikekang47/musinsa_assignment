@@ -49,11 +49,11 @@ public class ProductQueryService {
             // Get min prices for each category
             List<CategoryMinPrice> minPrices = productRepository.findMinPricesByCategories(categoryIds);
 
-            // Get products with min prices - 최적화: 한 번에 여러 카테고리 처리
+            // Get products with min prices - Optimization: process multiple categories at once
             return minPrices.stream()
                 .flatMap(minPrice -> productRepository.findProductsByCategoryIdAndPrice(
                         minPrice.categoryId(), minPrice.minPrice()).stream()
-                        .limit(1)) // 각 카테고리별로 첫 번째 상품만 가져오기
+                        .limit(1)) // Get only the first product for each category
                 .collect(Collectors.toList());
         } catch (DataAccessException e) {
             return List.of();
@@ -69,13 +69,13 @@ public class ProductQueryService {
     @Cacheable(value = PRICE_INFO_CACHE, key = "'cheapestGroupByBrandCategory'")
     public List<BrandCategoryPriceInfo> findCheapestProductsGroupByBrandAndCategory() {
         try {
-            // 데이터가 적은 경우 직접 조회
+            // Direct query for small datasets
             long count = productRepository.count();
-            if (count < 10000) { // 임계값 설정
+            if (count < 10000) { // Threshold setting
                 return productRepository.findCheapestProductsGroupByBrandAndCategory();
             }
             
-            // 데이터가 많은 경우 페이징 처리
+            // Pagination for large datasets
             List<BrandCategoryPriceInfo> results = new ArrayList<>();
             int pageNumber = 0;
             Page<BrandCategoryPriceInfo> page;
@@ -151,8 +151,8 @@ public class ProductQueryService {
     }
     
     /**
-     * 캐시 무효화 메서드
-     * 상품 데이터가 변경될 때 호출되어 관련 캐시를 무효화합니다.
+     * Cache invalidation method
+     * Called when product data changes to invalidate related caches.
      */
     @CacheEvict(value = PRICE_INFO_CACHE, allEntries = true)
     public void clearPriceCache() {

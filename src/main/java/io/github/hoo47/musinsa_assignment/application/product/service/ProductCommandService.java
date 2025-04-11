@@ -16,6 +16,7 @@ import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import io.github.hoo47.musinsa_assignment.common.exception.ResourceNotFoundException;
 
 @Service
 @Transactional
@@ -27,26 +28,24 @@ public class ProductCommandService {
     private final BrandRepository brandRepository;
     private final ProductQueryService productQueryService;
 
+    @Override
     public Product createProduct(ProductCreateRequest request) {
-        Category category = categoryRepository.findById(request.categoryId())
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.CATEGORY_NOT_FOUND));
-
-        Brand brand = brandRepository.findById(request.brandId())
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
-
-        if (request.price().compareTo(BigDecimal.ZERO) < 0) {
-            throw new BusinessException(BusinessErrorCode.INVALID_PRICE);
-        }
-
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
+        
+        Brand brand = brandRepository.findById(request.getBrandId())
+                .orElseThrow(() -> new ResourceNotFoundException("Brand not found with id: " + request.getBrandId()));
+        
         Product product = Product.builder()
-                .price(request.price())
+                .name(request.getName())
+                .price(request.getPrice())
                 .category(category)
                 .brand(brand)
                 .build();
         
         Product savedProduct = productRepository.save(product);
         
-        // 가격 정보 캐시 무효화
+        // Invalidate price cache
         productQueryService.clearPriceCache();
         
         return savedProduct;
@@ -86,7 +85,7 @@ public class ProductCommandService {
             }
         }
         
-        // 가격이나 카테고리, 브랜드가 변경되었을 때만 캐시 무효화
+        // Only invalidate cache when price, category, or brand changes
         if (priceChanged || categoryChanged || brandChanged) {
             productQueryService.clearPriceCache();
         }
@@ -94,16 +93,16 @@ public class ProductCommandService {
         return product;
     }
 
-    @Transactional
-    public Product deleteProduct(Long productId) {
-        Product product = findProductWithLock(productId);
-
+    @Override
+    public void deleteProduct(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Product not found with id: " + productId);
+        }
+        
         productRepository.deleteById(productId);
         
-        // 가격 정보 캐시 무효화
+        // Invalidate price cache
         productQueryService.clearPriceCache();
-        
-        return product;
     }
 
     /**
