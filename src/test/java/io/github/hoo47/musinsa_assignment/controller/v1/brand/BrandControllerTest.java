@@ -88,7 +88,8 @@ class BrandControllerTest {
                         .contentType("application/json-patch+json")
                         .content(validPatch))
                 .andExpect(status().isOk())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.id").value(brandId))
+                .andExpect(jsonPath("$.name").value("Updated Brand"));
     }
 
     @Test

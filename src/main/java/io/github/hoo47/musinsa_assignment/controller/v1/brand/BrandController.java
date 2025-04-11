@@ -58,7 +58,7 @@ public class BrandController {
 
         Brand brand = brandCommandService.updateBrand(id, patchedDto);
 
-        return null;
+        return new BrandResponse(brand.getId(), brand.getName());
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
