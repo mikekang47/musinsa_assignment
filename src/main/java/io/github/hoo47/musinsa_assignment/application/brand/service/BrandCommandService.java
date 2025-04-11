@@ -48,15 +48,6 @@ public class BrandCommandService {
     }
 
     /**
-     * Retrieves a brand by its ID.
-     * Used for read-only operations.
-     */
-    private Brand findBrand(Long brandId) {
-        return brandRepository.findById(brandId)
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
-    }
-
-    /**
      * Retrieves a brand by its ID with a pessimistic read lock.
      * Used for update and delete operations to prevent concurrent modifications.
      */

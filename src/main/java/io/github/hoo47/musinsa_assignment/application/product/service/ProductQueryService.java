@@ -91,22 +91,6 @@ public class ProductQueryService {
             return List.of();
         }
     }
-    
-    /**
-     * Find the cheapest products for a specific brand across all categories.
-     * More efficient when we only need data for one specific brand.
-     *
-     * @param brandId The brand ID to search
-     * @return List of price information for the given brand across all categories
-     */
-    @Cacheable(value = PRICE_INFO_CACHE, key = "'cheapestByBrand:' + #brandId")
-    public List<BrandCategoryPriceInfo> findCheapestProductsByBrand(Long brandId) {
-        try {
-            return productRepository.findCheapestProductsByBrand(brandId);
-        } catch (DataAccessException e) {
-            return List.of();
-        }
-    }
 
     /**
      * Find the cheapest products by category name.
