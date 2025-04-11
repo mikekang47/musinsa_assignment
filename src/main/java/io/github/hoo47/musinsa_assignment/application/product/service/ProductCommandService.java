@@ -16,7 +16,6 @@ import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import io.github.hoo47.musinsa_assignment.common.exception.ResourceNotFoundException;
 
 @Service
 @Transactional
@@ -28,17 +27,19 @@ public class ProductCommandService {
     private final BrandRepository brandRepository;
     private final ProductQueryService productQueryService;
 
-    @Override
     public Product createProduct(ProductCreateRequest request) {
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
-        
-        Brand brand = brandRepository.findById(request.getBrandId())
-                .orElseThrow(() -> new ResourceNotFoundException("Brand not found with id: " + request.getBrandId()));
-        
+        Category category = categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.CATEGORY_NOT_FOUND));
+
+        Brand brand = brandRepository.findById(request.brandId())
+                .orElseThrow(() -> new BusinessException(BusinessErrorCode.BRAND_NOT_FOUND));
+
+        if (request.price().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException(BusinessErrorCode.INVALID_PRICE);
+        }
+
         Product product = Product.builder()
-                .name(request.getName())
-                .price(request.getPrice())
+                .price(request.price())
                 .category(category)
                 .brand(brand)
                 .build();
@@ -93,25 +94,14 @@ public class ProductCommandService {
         return product;
     }
 
-    @Override
-    public void deleteProduct(Long productId) {
-        if (!productRepository.existsById(productId)) {
-            throw new ResourceNotFoundException("Product not found with id: " + productId);
-        }
-        
+    public Product deleteProduct(Long productId) {
+        Product product = findProductWithLock(productId);
+
         productRepository.deleteById(productId);
         
         // Invalidate price cache
         productQueryService.clearPriceCache();
-    }
-
-    /**
-     * Retrieves a product by its ID.
-     * Used for read-only operations.
-     */
-    private Product findProduct(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
+        return product;
     }
 
     /**

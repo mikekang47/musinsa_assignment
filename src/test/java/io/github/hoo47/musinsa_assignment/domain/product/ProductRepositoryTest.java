@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -118,25 +117,22 @@ class ProductRepositoryTest {
         
         // then
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("categoryId", "minPrice")
-                .contains(
-                        tuple(category1.getId(), new BigDecimal("5000")),
-                        tuple(category2.getId(), new BigDecimal("15000"))
-                );
         
-        // Category1(Top) has a minimum price of 5000
+        // Verify minimum price for Category1(Top)
         CategoryMinPrice category1MinPrice = result.stream()
                 .filter(minPrice -> minPrice.categoryId().equals(category1.getId()))
                 .findFirst()
                 .orElseThrow();
-        assertThat(category1MinPrice.minPrice()).isEqualTo(new BigDecimal("5000"));
+        assertThat(category1MinPrice.categoryId()).isEqualTo(category1.getId());
+        assertThat(category1MinPrice.minPrice().compareTo(BigDecimal.valueOf(5000))).isEqualTo(0);
         
-        // Category2(Bottom) has a minimum price of 15000
+        // Verify minimum price for Category2(Bottom)
         CategoryMinPrice category2MinPrice = result.stream()
                 .filter(minPrice -> minPrice.categoryId().equals(category2.getId()))
                 .findFirst()
                 .orElseThrow();
-        assertThat(category2MinPrice.minPrice()).isEqualTo(new BigDecimal("15000"));
+        assertThat(category2MinPrice.categoryId()).isEqualTo(category2.getId());
+        assertThat(category2MinPrice.minPrice().compareTo(BigDecimal.valueOf(15000))).isEqualTo(0);
     }
 
     @Test
@@ -172,20 +168,42 @@ class ProductRepositoryTest {
         
         assertThat(resultsByBrand).hasSize(2);
         assertThat(resultsByBrand).containsKeys(brandA.getId(), brandB.getId());
-        
+
         // Verify BrandA results
         List<BrandCategoryPriceInfo> brandAResults = resultsByBrand.get(brandA.getId());
         assertThat(brandAResults).hasSize(2);
-        assertThat(brandAResults).extracting("categoryId", "price")
-                .contains(tuple(category1.getId(), new BigDecimal("10000")),
-                        tuple(category2.getId(), new BigDecimal("15000")));
+        
+        // Verify category1 price for BrandA
+        BrandCategoryPriceInfo brandACategory1 = brandAResults.stream()
+                .filter(info -> info.categoryId().equals(category1.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(brandACategory1.price().compareTo(BigDecimal.valueOf(10000))).isEqualTo(0);
+
+        // Verify category2 price for BrandA
+        BrandCategoryPriceInfo brandACategory2 = brandAResults.stream()
+                .filter(info -> info.categoryId().equals(category2.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(brandACategory2.price().compareTo(BigDecimal.valueOf(15000))).isEqualTo(0);
         
         // Verify BrandB results
         List<BrandCategoryPriceInfo> brandBResults = resultsByBrand.get(brandB.getId());
         assertThat(brandBResults).hasSize(2);
-        assertThat(brandBResults).extracting("categoryId", "price")
-                .contains(tuple(category1.getId(), new BigDecimal("5000")),
-                        tuple(category2.getId(), new BigDecimal("20000")));
+        
+        // Verify category1 price for BrandB
+        BrandCategoryPriceInfo brandBCategory1 = brandBResults.stream()
+                .filter(info -> info.categoryId().equals(category1.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(brandBCategory1.price().compareTo(BigDecimal.valueOf(5000))).isEqualTo(0);
+
+        // Verify category2 price for BrandB
+        BrandCategoryPriceInfo brandBCategory2 = brandBResults.stream()
+                .filter(info -> info.categoryId().equals(category2.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(brandBCategory2.price().compareTo(BigDecimal.valueOf(20000))).isEqualTo(0);
     }
 
     @Test
