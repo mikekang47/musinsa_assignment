@@ -152,6 +152,17 @@ class ProductRepositoryTest {
         assertThat(brandBCategory2.price()).isEqualByComparingTo(new BigDecimal("20000"));
     }
 
+    @Test
+    @DisplayName("findMostExpensiveByCategoryName returns product with the maximum price")
+    void testFindMostExpensiveByCategoryName() {
+        // For category "상의", product1 is the highest priced product at 10000.
+        List<Product> expensiveProducts = productRepository.findMostExpensiveByCategoryName("상의");
+        assertThat(expensiveProducts).isNotNull();
+        assertThat(expensiveProducts).hasSize(1);
+        Product maxProduct = expensiveProducts.get(0);
+        assertThat(maxProduct.getPrice()).isEqualByComparingTo(new BigDecimal("10000"));
+    }
+
     // 헬퍼 메서드
     private BrandCategoryPriceInfo findInfoByCategory(List<BrandCategoryPriceInfo> infos, String categoryName) {
         return infos.stream()

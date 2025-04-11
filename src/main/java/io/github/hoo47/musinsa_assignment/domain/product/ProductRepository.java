@@ -28,4 +28,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                 ORDER BY p.brand.id, p.category.id
             """)
     List<BrandCategoryPriceInfo> findCheapestProductsGroupByBrandAndCategory();
+
+    @Query("select p from Product p where p.category.name = :categoryName and p.price = (select min(pp.price) from Product pp where pp.category.name = :categoryName)")
+    List<Product> findCheapestByCategoryName(@Param("categoryName") String categoryName);
+
+    @Query("select p from Product p where p.category.name = :categoryName and p.price = (select max(pp.price) from Product pp where pp.category.name = :categoryName)")
+    List<Product> findMostExpensiveByCategoryName(@Param("categoryName") String categoryName);
 }
