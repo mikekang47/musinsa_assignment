@@ -1,17 +1,16 @@
 package io.github.hoo47.musinsa_assignment.application.product.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
 import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
 import io.github.hoo47.musinsa_assignment.domain.product.dto.CategoryMinPrice;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,7 +31,7 @@ public class ProductQueryService {
     public List<Product> getCheapestProductInCategory(List<Long> categoryIds) {
         // Get min prices for each category
         List<CategoryMinPrice> minPrices = productRepository.findMinPricesByCategories(categoryIds);
-        
+
         // Get products with min prices
         List<Product> result = new ArrayList<>();
         for (CategoryMinPrice minPrice : minPrices) {
@@ -43,7 +42,7 @@ public class ProductQueryService {
                 result.add(products.get(0));
             }
         }
-        
+
         return result;
     }
 
@@ -69,7 +68,7 @@ public class ProductQueryService {
         if (minPrice == null) {
             return List.of();
         }
-        
+
         return productRepository.findProductsByCategoryNameAndPrice(categoryName, minPrice);
     }
 
@@ -85,7 +84,7 @@ public class ProductQueryService {
         if (maxPrice == null) {
             return List.of();
         }
-        
+
         return productRepository.findProductsByCategoryNameAndPrice(categoryName, maxPrice);
     }
 }

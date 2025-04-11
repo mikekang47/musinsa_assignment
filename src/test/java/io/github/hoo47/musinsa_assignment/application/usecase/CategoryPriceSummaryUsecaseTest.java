@@ -12,38 +12,56 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 class CategoryPriceSummaryUsecaseTest {
 
     private static final ProductQueryService productQueryService = Mockito.mock(ProductQueryService.class);
     private static final CategoryPriceSummaryUsecase usecase = new CategoryPriceSummaryUsecase(productQueryService);
 
-    private static final String categoryName = "상의";
-
+    private static final String CATEGORY_NAME = "상의";
 
     @Test
-    @DisplayName("usecase returns proper summary response for a valid category")
+    @DisplayName("카테고리별 최저가와 최고가 상품 정보를 올바르게 조회한다")
     void testGetPriceSummaryByCategoryName() {
+        // given
+        // 최저가 상품 준비 (같은 브랜드의 동일 가격 상품 2개)
+        Product lowestProduct1 = Product.builder()
+                .price(BigDecimal.valueOf(10000))
+                .brand(Brand.builder().name("BrandA").build())
+                .build();
+        Product lowestProduct2 = Product.builder()
+                .price(BigDecimal.valueOf(10000))
+                .brand(Brand.builder().name("BrandA").build())
+                .build();
 
-        // Prepare lowest price products (simulate 2 products with same low price for BrandA)
-        Product p1 = Product.builder().price(BigDecimal.valueOf(10000))
-                .brand(Brand.builder().name("BrandA").build()).build();
-        Product p2 = Product.builder().price(BigDecimal.valueOf(10000))
-                .brand(Brand.builder().name("BrandA").build()).build();
+        // 최고가 상품 준비
+        Product highestProduct = Product.builder()
+                .price(BigDecimal.valueOf(30000))
+                .brand(Brand.builder().name("BrandB").build())
+                .build();
 
-        // Prepare highest price product for BrandB
-        Product p3 = Product.builder().price(BigDecimal.valueOf(30000))
-                .brand(Brand.builder().name("BrandB").build()).build();
+        // 서비스 모의 설정
+        when(productQueryService.findCheapestByCategoryName(CATEGORY_NAME))
+                .thenReturn(List.of(lowestProduct1, lowestProduct2));
+        when(productQueryService.findMostExpensiveByCategoryName(CATEGORY_NAME))
+                .thenReturn(List.of(highestProduct));
 
-        Mockito.when(productQueryService.findCheapestByCategoryName(categoryName))
-                .thenReturn(List.of(p1, p2));
-        Mockito.when(productQueryService.findMostExpensiveByCategoryName(categoryName))
-                .thenReturn(List.of(p3));
+        // when
+        CategoryPriceSummaryResponse response = usecase.getPriceSummaryByCategoryName(CATEGORY_NAME);
 
-        CategoryPriceSummaryResponse response = usecase.getPriceSummaryByCategoryName(categoryName);
+        // then
         assertThat(response).isNotNull();
-        assertThat(response.category()).isEqualTo(categoryName);
+        assertThat(response.category()).isEqualTo(CATEGORY_NAME);
         assertThat(response.lowestPrice()).hasSize(2);
         assertThat(response.highestPrice()).hasSize(1);
+
+        // 최저가 정보 검증
+        assertThat(response.lowestPrice().get(0).brand()).isEqualTo("BrandA");
+        assertThat(response.lowestPrice().get(0).price()).isEqualByComparingTo(BigDecimal.valueOf(10000));
+
+        // 최고가 정보 검증
+        assertThat(response.highestPrice().get(0).brand()).isEqualTo("BrandB");
+        assertThat(response.highestPrice().get(0).price()).isEqualByComparingTo(BigDecimal.valueOf(30000));
     }
 }

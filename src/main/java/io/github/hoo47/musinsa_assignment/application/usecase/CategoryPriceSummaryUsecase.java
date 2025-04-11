@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,6 +16,13 @@ public class CategoryPriceSummaryUsecase {
 
     private final ProductQueryService productQueryService;
 
+    /**
+     * Get price summary (lowest and highest prices) for a specific category
+     * This method uses optimized repository queries to retrieve data efficiently.
+     *
+     * @param categoryName the name of the category to get price summary for
+     * @return a CategoryPriceSummaryResponse containing the category name, lowest prices, and highest prices
+     */
     public CategoryPriceSummaryResponse getPriceSummaryByCategoryName(String categoryName) {
         // Get all products with the lowest price for the category
         List<Product> cheapestProducts = productQueryService.findCheapestByCategoryName(categoryName);
@@ -25,11 +31,11 @@ public class CategoryPriceSummaryUsecase {
 
         List<CategoryPriceSummaryResponse.PriceInfo> lowestPrices = cheapestProducts.stream()
                 .map(p -> new CategoryPriceSummaryResponse.PriceInfo(p.getBrand().getName(), p.getPrice()))
-                .collect(Collectors.toList());
+                .toList();
 
         List<CategoryPriceSummaryResponse.PriceInfo> highestPrices = expensiveProducts.stream()
                 .map(p -> new CategoryPriceSummaryResponse.PriceInfo(p.getBrand().getName(), p.getPrice()))
-                .collect(Collectors.toList());
+                .toList();
 
         return new CategoryPriceSummaryResponse(categoryName, lowestPrices, highestPrices);
     }
