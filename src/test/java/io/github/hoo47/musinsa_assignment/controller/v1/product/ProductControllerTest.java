@@ -1,30 +1,30 @@
 package io.github.hoo47.musinsa_assignment.controller.v1.product;
 
-import java.math.BigDecimal;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.hoo47.musinsa_assignment.application.product.dto.request.ProductCreateRequest;
+import io.github.hoo47.musinsa_assignment.application.product.dto.request.ProductUpdateRequest;
+import io.github.hoo47.musinsa_assignment.application.product.service.ProductCommandService;
+import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
+import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
+import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
+import io.github.hoo47.musinsa_assignment.domain.category.Category;
+import io.github.hoo47.musinsa_assignment.domain.product.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import java.math.BigDecimal;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.github.hoo47.musinsa_assignment.application.product.dto.request.ProductCreateRequest;
-import io.github.hoo47.musinsa_assignment.application.product.dto.request.ProductUpdateRequest;
-import io.github.hoo47.musinsa_assignment.application.product.service.ProductCommandService;
-import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
-import io.github.hoo47.musinsa_assignment.domain.category.Category;
-import io.github.hoo47.musinsa_assignment.domain.product.Product;
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTest {
@@ -147,4 +147,45 @@ class ProductControllerTest {
                         .content(negativePricePatch))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("should return bad request when product id is not found")
+    void shouldReturnBadRequestWhenProductIdNotFound() throws Exception {
+        Long productId = 999L; // assuming this ID does not exist
+        String validPatch = "[{\"op\":\"replace\",\"path\":\"/price\",\"value\":20000}]";
+
+        given(productCommandService.updateProduct(eq(productId), any(ProductUpdateRequest.class)))
+                .willThrow(new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
+
+        // when/then
+        mockMvc.perform(patch("/api/v1/products/{id}", productId)
+                        .contentType("application/json-patch+json")
+                        .content(validPatch))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("should delete product when product exists")
+    void shouldDeleteProductWhenProductExists() throws Exception {
+        Long productId = 1L;
+        // Assuming the product exists and is deleted successfully
+        given(productCommandService.deleteProduct(productId)).willReturn(null);
+
+        mockMvc.perform(delete("/api/v1/products/{id}", productId))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("should return not found when product does not exist")
+    void shouldReturnNotFoundWhenProductDoesNotExist() throws Exception {
+        Long productId = 999L; // assuming this ID does not exist
+
+        given(productCommandService.deleteProduct(productId))
+                .willThrow(new BusinessException(BusinessErrorCode.PRODUCT_NOT_FOUND));
+
+        // when/then
+        mockMvc.perform(delete("/api/v1/products/{id}", productId))
+                .andExpect(status().isNotFound());
+    }
+
 }

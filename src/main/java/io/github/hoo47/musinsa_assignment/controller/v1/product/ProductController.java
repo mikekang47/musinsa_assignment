@@ -3,7 +3,6 @@ package io.github.hoo47.musinsa_assignment.controller.v1.product;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.AnnotatedParameter;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import io.github.hoo47.musinsa_assignment.application.product.dto.request.ProductCreateRequest;
@@ -85,6 +84,12 @@ public class ProductController {
                         product.getCategory().getName()
                 )
         );
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProduct(@PathVariable Long id) {
+        productCommandService.deleteProduct(id);
     }
 
 }
