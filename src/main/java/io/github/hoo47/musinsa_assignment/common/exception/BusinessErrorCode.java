@@ -3,7 +3,6 @@ package io.github.hoo47.musinsa_assignment.common.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 
 @Getter
 @RequiredArgsConstructor
@@ -21,7 +20,9 @@ public enum BusinessErrorCode {
 
     // Product
     INVALID_PRICE("PRODUCT-001", "상품 가격은 0보다 크거나 같아야 합니다.", HttpStatus.BAD_REQUEST),
-    PRODUCT_NOT_FOUND("PRODUCT-002", "존재하지 않는 상품입니다.", HttpStatus.NOT_FOUND),;
+    PRODUCT_NOT_FOUND("PRODUCT-002", "존재하지 않는 상품입니다.", HttpStatus.NOT_FOUND),
+
+    INTERNAL_SERVER_ERROR("INTERNAL-001", "서버 내부 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),;
 
     private final String code;
     private final String message;
