@@ -5,6 +5,7 @@ import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;
 import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
 import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
+import io.github.hoo47.musinsa_assignment.domain.product.dto.CategoryMinPrice;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -100,18 +101,44 @@ class ProductRepositoryTest {
     }
 
     @Test
-    @DisplayName("주어진 카테고리들에 속한 가장 저렴한 상품을 조회할 수 있다")
-    void findTop1ByCategoryIdOrderByPriceAscTest() {
-        // given
-        Category category = categoryRepository.findAll().get(0);
-
+    @DisplayName("카테고리별 최저가격을 조회할 수 있다")
+    void findMinPricesByCategoriesTest() {
         // when
-        List<Product> products = productRepository.findCheapestProductsByCategory(List.of(category.getId()));
+        List<CategoryMinPrice> minPrices = productRepository.findMinPricesByCategories(
+                List.of(category1.getId(), category2.getId()));
+
+        // then
+        assertThat(minPrices).isNotEmpty();
+        assertThat(minPrices).hasSize(2);
+
+        // 카테고리1(상의)의 최저가는 5000
+        CategoryMinPrice category1MinPrice = minPrices.stream()
+                .filter(mp -> mp.categoryId().equals(category1.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(category1MinPrice.minPrice()).isEqualByComparingTo(new BigDecimal("5000"));
+
+        // 카테고리2(하의)의 최저가는 15000
+        CategoryMinPrice category2MinPrice = minPrices.stream()
+                .filter(mp -> mp.categoryId().equals(category2.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(category2MinPrice.minPrice()).isEqualByComparingTo(new BigDecimal("15000"));
+    }
+
+    @Test
+    @DisplayName("카테고리 ID와 가격으로 상품을 조회할 수 있다")
+    void findProductsByCategoryIdAndPriceTest() {
+        // when
+        List<Product> products = productRepository.findProductsByCategoryIdAndPrice(
+                category1.getId(), new BigDecimal("5000"));
 
         // then
         assertThat(products).isNotEmpty();
-        assertThat(products.size()).isEqualTo(1);
-        assertThat(products.get(0).getPrice()).isEqualTo(BigDecimal.valueOf(5000));
+        assertThat(products).hasSize(1);
+        assertThat(products.get(0).getPrice()).isEqualByComparingTo(new BigDecimal("5000"));
+        assertThat(products.get(0).getCategory().getId()).isEqualTo(category1.getId());
+        assertThat(products.get(0).getBrand().getId()).isEqualTo(brand2.getId());
     }
 
     @Test
@@ -153,14 +180,39 @@ class ProductRepositoryTest {
     }
 
     @Test
-    @DisplayName("findMostExpensiveByCategoryName returns product with the maximum price")
-    void testFindMostExpensiveByCategoryName() {
-        // For category "상의", product1 is the highest priced product at 10000.
-        List<Product> expensiveProducts = productRepository.findMostExpensiveByCategoryName("상의");
-        assertThat(expensiveProducts).isNotNull();
-        assertThat(expensiveProducts).hasSize(1);
-        Product maxProduct = expensiveProducts.get(0);
-        assertThat(maxProduct.getPrice()).isEqualByComparingTo(new BigDecimal("10000"));
+    @DisplayName("카테고리명으로 최소가격을 조회할 수 있다")
+    void findMinPriceByCategoryNameTest() {
+        // when
+        BigDecimal minPrice = productRepository.findMinPriceByCategoryName("상의");
+
+        // then
+        assertThat(minPrice).isNotNull();
+        assertThat(minPrice).isEqualByComparingTo(new BigDecimal("5000"));
+    }
+
+    @Test
+    @DisplayName("카테고리명으로 최대가격을 조회할 수 있다")
+    void findMaxPriceByCategoryNameTest() {
+        // when
+        BigDecimal maxPrice = productRepository.findMaxPriceByCategoryName("상의");
+
+        // then
+        assertThat(maxPrice).isNotNull();
+        assertThat(maxPrice).isEqualByComparingTo(new BigDecimal("10000"));
+    }
+
+    @Test
+    @DisplayName("카테고리명과 가격으로 상품을 조회할 수 있다")
+    void findProductsByCategoryNameAndPriceTest() {
+        // when
+        List<Product> products = productRepository.findProductsByCategoryNameAndPrice("상의", new BigDecimal("10000"));
+
+        // then
+        assertThat(products).isNotEmpty();
+        assertThat(products).hasSize(1);
+        assertThat(products.get(0).getPrice()).isEqualByComparingTo(new BigDecimal("10000"));
+        assertThat(products.get(0).getCategory().getName()).isEqualTo("상의");
+        assertThat(products.get(0).getBrand().getName()).isEqualTo("브랜드A");
     }
 
     // 헬퍼 메서드
