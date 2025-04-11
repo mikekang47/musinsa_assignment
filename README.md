@@ -83,6 +83,7 @@
 2. 프로젝트 빌드: `./gradlew build`
 3. 애플리케이션 실행: `./gradlew bootRun` 또는 `java -jar build/libs/musinsa_assignment-0.0.1-SNAPSHOT.jar`
 4. Redis 서버 필요: 로컬 환경에서 Redis 서버가 실행 중이어야 합니다.
+5. 테스트 실행: `./gradlew test` (JUnit5 기반)
 
 ## 데이터베이스 스키마
 - **categories**: 카테고리 정보 (id, name)
