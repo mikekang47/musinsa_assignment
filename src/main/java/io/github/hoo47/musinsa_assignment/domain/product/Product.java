@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "products")
+@Builder
 public class Product extends BaseTimeEntity {
 
     @Id
@@ -29,13 +30,6 @@ public class Product extends BaseTimeEntity {
     @ManyToOne(optional = false)
     @JoinColumn(name = "brand_id")
     private Brand brand;
-
-    @Builder
-    public Product(BigDecimal price, Category category, Brand brand) {
-        this.price = price;
-        this.category = category;
-        this.brand = brand;
-    }
 
     public void updateCategory(Category category) {
         this.category = category;
