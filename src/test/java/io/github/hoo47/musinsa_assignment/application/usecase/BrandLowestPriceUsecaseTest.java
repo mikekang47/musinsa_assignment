@@ -1,22 +1,21 @@
 package io.github.hoo47.musinsa_assignment.application.usecase;
 
+import io.github.hoo47.musinsa_assignment.application.category.service.CategoryQueryService;
+import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse;
+import io.github.hoo47.musinsa_assignment.application.product.service.ProductQueryService;
+import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-
-import io.github.hoo47.musinsa_assignment.application.category.service.CategoryQueryService;
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse;
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse.CategoryPrice;
-import io.github.hoo47.musinsa_assignment.application.product.service.ProductQueryService;
-import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
 
 class BrandLowestPriceUsecaseTest {
 
@@ -163,7 +162,7 @@ class BrandLowestPriceUsecaseTest {
     }
     
     // 카테고리명으로 카테고리 가격 정보를 찾는 헬퍼 메서드
-    private CategoryPrice findCategoryPrice(BrandProductSummaryResponse response, String categoryName) {
+    private BrandProductSummaryResponse.CategoryPrice findCategoryPrice(BrandProductSummaryResponse response, String categoryName) {
         return response.lowestPrice().categories().stream()
                 .filter(cp -> cp.categoryName().equals(categoryName))
                 .findFirst()

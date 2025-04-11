@@ -1,9 +1,13 @@
 package io.github.hoo47.musinsa_assignment.application.usecase;
 
-import java.math.BigDecimal;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse;
+import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse.CategoryPrice;
+import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
+import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
+import io.github.hoo47.musinsa_assignment.domain.category.Category;
+import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
+import io.github.hoo47.musinsa_assignment.domain.product.Product;
+import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,14 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse;
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse.CategoryPrice;
-import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
-import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
-import io.github.hoo47.musinsa_assignment.domain.category.Category;
-import io.github.hoo47.musinsa_assignment.domain.category.CategoryRepository;
-import io.github.hoo47.musinsa_assignment.domain.product.Product;
-import io.github.hoo47.musinsa_assignment.domain.product.ProductRepository;
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -147,7 +146,7 @@ class BrandLowestPriceUsecaseIntegrationTest {
         // 하의 카테고리 검증
         assertThat(findCategoryPrice(response, "하의")).isNotNull();
         assertThat(findCategoryPrice(response, "하의").price()).isEqualByComparingTo(new BigDecimal("15000"));
-        
+
         // 신발 카테고리 검증
         assertThat(findCategoryPrice(response, "신발")).isNotNull();
         assertThat(findCategoryPrice(response, "신발").price()).isEqualByComparingTo(new BigDecimal("15000"));
@@ -255,7 +254,7 @@ class BrandLowestPriceUsecaseIntegrationTest {
         // then
         assertThat(response).isNull();
     }
-    
+
     // 카테고리명으로 카테고리 가격 정보를 찾는 헬퍼 메서드
     private CategoryPrice findCategoryPrice(BrandProductSummaryResponse response, String categoryName) {
         return response.lowestPrice().categories().stream()
