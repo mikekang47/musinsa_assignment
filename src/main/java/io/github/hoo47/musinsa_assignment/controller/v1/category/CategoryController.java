@@ -27,11 +27,6 @@ public class CategoryController {
         return categoryProductPriceUsecase.getCategoryPricing();
     }
 
-    @GetMapping("/lowest-brand-price")
-    public BrandProductSummaryResponse getLowestBrandPrice() {
-        return brandLowestPriceUsecase.getBrandWithLowestTotalPrice();
-    }
-
     @GetMapping("/{categoryName}/price-summary")
     public CategoryPriceSummaryResponse getCategoryPriceSummary(@PathVariable String categoryName) {
         return categoryPriceSummaryUsecase.getPriceSummaryByCategoryName(categoryName);
