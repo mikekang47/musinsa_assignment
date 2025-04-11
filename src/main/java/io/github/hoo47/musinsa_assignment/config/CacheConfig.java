@@ -90,7 +90,7 @@ public class CacheConfig implements CachingConfigurer {
                 )
                 .disableCachingNullValues();
         
-        // 개별 캐시 설정 - 커머스 서비스에 맞게 짧은 TTL 설정
+        // 개별 캐시 설정 - 커머스 서비스에 맞게 TTL 설정
         return RedisCacheManager.builder(redisConnectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withCacheConfiguration("priceSummaryCache", 
@@ -99,6 +99,8 @@ public class CacheConfig implements CachingConfigurer {
                         defaultConfig.entryTtl(Duration.ofSeconds(20))) // 20초
                 .withCacheConfiguration("brandLowestPriceCache", 
                         defaultConfig.entryTtl(Duration.ofSeconds(60))) // 1분
+                .withCacheConfiguration("priceInfoCache", 
+                        defaultConfig.entryTtl(Duration.ofSeconds(120))) // 2분 - 새로 추가된 캐시
                 .build();
     }
     
@@ -119,7 +121,7 @@ public class CacheConfig implements CachingConfigurer {
     
     /**
      * 캐시 에러 핸들러를 설정합니다.
-     * Redis 연결 실패 등의 오류가 발생하면 로그를 남기고 원래 메서드를 실행합니다.
+     * Redis 연결 실패 등의 오류가 발생하면 원래 메서드를 실행합니다.
      */
     @Override
     public CacheErrorHandler errorHandler() {
@@ -128,31 +130,26 @@ public class CacheConfig implements CachingConfigurer {
     
     /**
      * 캐시 에러 처리를 위한 커스텀 핸들러
-     * 캐시 조회/갱신 실패 시 로그를 남기고 원래 메서드를 실행하도록 합니다.
+     * 캐시 조회/갱신 실패 시 원래 메서드를 실행하도록 합니다.
      */
     public static class CustomCacheErrorHandler extends SimpleCacheErrorHandler {
         @Override
         public void handleCacheGetError(RuntimeException exception, org.springframework.cache.Cache cache, Object key) {
-            log.error("캐시 조회 실패: {}, 키: {}", cache.getName(), key, exception);
-            // 실패 처리를 상위 클래스에 위임하여 애플리케이션 코드 실행을 허용
             super.handleCacheGetError(exception, cache, key);
         }
 
         @Override
         public void handleCachePutError(RuntimeException exception, org.springframework.cache.Cache cache, Object key, Object value) {
-            log.error("캐시 갱신 실패: {}, 키: {}", cache.getName(), key, exception);
             super.handleCachePutError(exception, cache, key, value);
         }
 
         @Override
         public void handleCacheEvictError(RuntimeException exception, org.springframework.cache.Cache cache, Object key) {
-            log.error("캐시 제거 실패: {}, 키: {}", cache.getName(), key, exception);
             super.handleCacheEvictError(exception, cache, key);
         }
 
         @Override
         public void handleCacheClearError(RuntimeException exception, org.springframework.cache.Cache cache) {
-            log.error("캐시 초기화 실패: {}", cache.getName(), exception);
             super.handleCacheClearError(exception, cache);
         }
     }

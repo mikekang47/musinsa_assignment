@@ -3,9 +3,13 @@ package io.github.hoo47.musinsa_assignment.domain.product;
 import io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo;
 import io.github.hoo47.musinsa_assignment.domain.product.dto.CategoryMinPrice;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
@@ -42,6 +46,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     /**
      * Find all products with minimum price per brand and category combination
+     * Optimized with pagination support for large datasets
      *
      * @return list of brand-category price info records
      */
@@ -60,7 +65,64 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             JOIN Category c ON c.id = minPrices.categoryId
             ORDER BY b.id, c.id
             """)
+    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
     List<BrandCategoryPriceInfo> findCheapestProductsGroupByBrandAndCategory();
+
+    /**
+     * Find all products with minimum price per brand and category combination with pagination
+     * Optimized for large datasets by adding pagination support
+     *
+     * @param pageable pagination information
+     * @return page of brand-category price info records
+     */
+    @Query(value = """
+            SELECT new io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo(
+                b.id, b.name,
+                c.id, c.name,
+                minPrices.minPrice
+            )
+            FROM (
+                SELECT p.brand.id as brandId, p.category.id as categoryId, MIN(p.price) as minPrice
+                FROM Product p
+                GROUP BY p.brand.id, p.category.id
+            ) AS minPrices
+            JOIN Brand b ON b.id = minPrices.brandId
+            JOIN Category c ON c.id = minPrices.categoryId
+            ORDER BY b.id, c.id
+            """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM (
+                        SELECT p.brand.id as brandId, p.category.id as categoryId
+                        FROM Product p
+                        GROUP BY p.brand.id, p.category.id
+                    ) AS countQuery
+                    """)
+    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
+    Page<BrandCategoryPriceInfo> findCheapestProductsGroupByBrandAndCategoryPaged(Pageable pageable);
+
+    /**
+     * Find products with minimum price per category for a specific brand
+     * This method is more efficient when filtering by a specific brand
+     *
+     * @param brandId brand ID to filter by
+     * @return list of brand-category price info records for the given brand
+     */
+    @Query("""
+            SELECT new io.github.hoo47.musinsa_assignment.domain.product.dto.BrandCategoryPriceInfo(
+                :brandId, b.name,
+                c.id, c.name,
+                MIN(p.price)
+            )
+            FROM Product p
+            JOIN p.brand b
+            JOIN p.category c
+            WHERE p.brand.id = :brandId
+            GROUP BY c.id, c.name, b.name
+            ORDER BY c.id
+            """)
+    @QueryHints({@QueryHint(name = "org.hibernate.cacheable", value = "true")})
+    List<BrandCategoryPriceInfo> findCheapestProductsByBrand(@Param("brandId") Long brandId);
 
     /**
      * Get the minimum price for a category by name
