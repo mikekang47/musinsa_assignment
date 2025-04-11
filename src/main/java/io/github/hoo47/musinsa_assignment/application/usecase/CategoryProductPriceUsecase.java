@@ -3,7 +3,6 @@ package io.github.hoo47.musinsa_assignment.application.usecase;
 import io.github.hoo47.musinsa_assignment.application.category.service.CategoryQueryService;
 import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductSummaryResponse;
 import io.github.hoo47.musinsa_assignment.application.product.service.ProductQueryService;
-import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
 import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import io.github.hoo47.musinsa_assignment.domain.category.Category;

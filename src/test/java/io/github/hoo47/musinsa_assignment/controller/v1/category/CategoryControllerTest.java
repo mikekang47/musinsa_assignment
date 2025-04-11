@@ -1,9 +1,7 @@
 package io.github.hoo47.musinsa_assignment.controller.v1.category;
 
 import io.github.hoo47.musinsa_assignment.application.brand.dto.response.CategoryPriceSummaryResponse;
-import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse;
 import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductSummaryResponse;
-import io.github.hoo47.musinsa_assignment.application.usecase.BrandLowestPriceUsecase;
 import io.github.hoo47.musinsa_assignment.application.usecase.CategoryPriceSummaryUsecase;
 import io.github.hoo47.musinsa_assignment.application.usecase.CategoryProductPriceUsecase;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
@@ -16,7 +14,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -32,9 +29,6 @@ class CategoryControllerTest {
 
     @MockBean
     private CategoryProductPriceUsecase categoryProductPriceUsecase;
-
-    @MockBean
-    private BrandLowestPriceUsecase brandLowestPriceUsecase;
 
     @MockBean
     private CategoryPriceSummaryUsecase categoryPriceSummaryUsecase;
