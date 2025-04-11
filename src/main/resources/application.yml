@@ -26,7 +26,7 @@ spring:
   # Redis 캐시 설정
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
       timeout: 3000         # 연결 타임아웃 (밀리초)
       connect-timeout: 3000 # 연결 생성 타임아웃 (밀리초)
