@@ -1,8 +1,9 @@
 package io.github.hoo47.musinsa_assignment.controller.v1.brand;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.hoo47.musinsa_assignment.application.brand.BrandCommandService;
 import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandCreateRequest;
+import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandUpdateRequest;
+import io.github.hoo47.musinsa_assignment.application.brand.service.BrandCommandService;
 import io.github.hoo47.musinsa_assignment.domain.brand.Brand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BrandController.class)
 class BrandControllerTest {
@@ -42,7 +43,7 @@ class BrandControllerTest {
         mockMvc.perform(post("/api/v1/brands")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("NewBrand"));
     }
@@ -70,6 +71,48 @@ class BrandControllerTest {
         mockMvc.perform(post("/api/v1/brands")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("should update brand via patch when patch request is valid")
+    void shouldUpdateBrandViaPatchWhenPatchIsValid() throws Exception {
+        Long brandId = 1L;
+        String validPatch = "[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Updated Brand\"}]";
+        Brand updatedBrand = new Brand(brandId, "Updated Brand");
+        given(brandCommandService.updateBrand(brandId, new BrandUpdateRequest("Updated Brand")))
+                .willReturn(updatedBrand);
+
+        mockMvc.perform(patch("/api/v1/brands/{id}", brandId)
+                        .contentType("application/json-patch+json")
+                        .content(validPatch))
+                .andExpect(status().isOk())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    @DisplayName("should return bad request when patch request has invalid format")
+    void shouldReturnBadRequestWhenPatchFormatIsInvalid() throws Exception {
+        Long brandId = 1L;
+        // Invalid patch because it is not an array
+        String invalidPatch = "{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"Updated Brand\"}";
+
+        mockMvc.perform(patch("/api/v1/brands/{id}", brandId)
+                        .contentType("application/json-patch+json")
+                        .content(invalidPatch))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("should return bad request when patched brand name is empty")
+    void shouldReturnBadRequestWhenPatchedBrandNameIsEmpty() throws Exception {
+        Long brandId = 1L;
+        // Patch attempts to set the name to an empty string
+        String patchWithEmptyName = "[{\"op\": \"replace\", \"path\": \"/name\", \"value\": \"\"}]";
+
+        mockMvc.perform(patch("/api/v1/brands/{id}", brandId)
+                        .contentType("application/json-patch+json")
+                        .content(patchWithEmptyName))
                 .andExpect(status().isBadRequest());
     }
 }
