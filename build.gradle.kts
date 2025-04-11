@@ -34,6 +34,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.flywaydb:flyway-core")
+    implementation("com.github.java-json-tools:json-patch:1.12")
 }
 
 tasks.withType<Test> {

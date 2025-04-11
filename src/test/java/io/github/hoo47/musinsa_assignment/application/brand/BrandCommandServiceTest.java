@@ -1,7 +1,8 @@
 package io.github.hoo47.musinsa_assignment.application.brand;
 
-import io.github.hoo47.musinsa_assignment.application.brand.dto.BrandUpdateRequest;
 import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandCreateRequest;
+import io.github.hoo47.musinsa_assignment.application.brand.dto.request.BrandUpdateRequest;
+import io.github.hoo47.musinsa_assignment.application.brand.service.BrandCommandService;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessException;
 import io.github.hoo47.musinsa_assignment.domain.brand.BrandRepository;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -60,7 +63,7 @@ class BrandCommandServiceTest {
 
     @Test
     @DisplayName("브랜드를 수정할 수 있다.")
-    void updateBrand() {
+    void updateBrand() throws IOException {
         // given
         String brandName = "Test Brand";
         var brand = brandCommandService.createBrand(new BrandCreateRequest(brandName));
