@@ -119,4 +119,4 @@ INSERT INTO products (brand_id, category_id, price) VALUES
     (9, (SELECT id FROM categories WHERE name = '가방'), 2400),
     (9, (SELECT id FROM categories WHERE name = '모자'), 1700),
     (9, (SELECT id FROM categories WHERE name = '양말'), 1700),
-    (9, (SELECT id FROM categories WHERE name = '액세서리'), 2400); 
+    (9, (SELECT id FROM categories WHERE name = '액세서리'), 2400);
