@@ -11,7 +11,6 @@
 - **ORM**: JPA/Hibernate
 - **데이터베이스 마이그레이션**: Flyway
 - **빌드 도구**: Gradle
-- **컨테이너화**: Docker, Docker Compose
 - **기타 라이브러리**: 
   - Lombok
   - Json-Patch
@@ -64,16 +63,17 @@
 ## API 설명
 
 ### 1. 카테고리별 최저가 상품 조회
-- **엔드포인트**: GET `/api/v1/categories/lowest-price-by-category`
+- **엔드포인트**: GET `/api/v1/products/lowest-price`
 - **응답 예시**: 각 카테고리별 최저가격 브랜드와 상품 가격 정보
 
 ### 2. 브랜드별 카테고리 최저가 상품 조회
-- **엔드포인트**: GET `/api/v1/brands/lowest-price`
-- **응답 예시**: 모든 카테고리 상품의 가격 합계가 가장 저렴한 브랜드와 상품 가격 정보
+- **엔드포인트**: GET `/api/v1/products/brands/{brandId}/lowest-price`
+- **응답 예시**: 특정 브랜드의 각 카테고리별 최저가격 상품 정보
 
 ### 3. 카테고리 최저가/최고가 상품 조회
-- **엔드포인트**: GET `/api/v1/categories/{categoryName}/price-summary`
-- **응답 예시**: 특정 카테고리의 최저가 및 최고가 상품 정보
+- **엔드포인트**: GET `/api/v1/products/categories/{categoryName}/cheapest`
+- **엔드포인트**: GET `/api/v1/products/categories/{categoryName}/expensive`
+- **응답 예시**: 특정 카테고리의 최저가 또는 최고가 상품 정보
 
 ### 4. 상품 가격 변경
 - **엔드포인트**: PATCH `/api/v1/products/{productId}`
@@ -81,22 +81,10 @@
 - **응답 예시**: 변경된 상품 정보
 
 ## 실행 방법
-
-### 로컬 환경에서 실행
 1. 프로젝트 클론: `git clone [레포지토리 URL]`
 2. 프로젝트 빌드: `./gradlew build`
-3. Docker Compose로 실행:
-   ```bash
-   docker compose up --build -d
-   ```
-    - Spring Boot 애플리케이션과 Redis가 자동으로 실행됩니다.
-    - 애플리케이션은 8080 포트에서 접근 가능합니다.
-    - Redis는 6379 포트에서 실행됩니다.
-
-4. 서비스 중지:
-   ```bash
-   docker compose down
-   ```
+3. 애플리케이션 실행: `./gradlew bootRun` 또는 `java -jar build/libs/musinsa_assignment-0.0.1-SNAPSHOT.jar`
+4. Redis 서버 필요: 로컬 환경에서 Redis 서버가 실행 중이어야 합니다.
 5. 테스트 실행: `./gradlew test` (JUnit5 기반)
 
 ## 데이터베이스 스키마

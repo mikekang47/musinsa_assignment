@@ -1,7 +1,9 @@
 package io.github.hoo47.musinsa_assignment.controller.v1.category;
 
 import io.github.hoo47.musinsa_assignment.application.brand.dto.response.CategoryPriceSummaryResponse;
+import io.github.hoo47.musinsa_assignment.application.product.dto.response.BrandProductSummaryResponse;
 import io.github.hoo47.musinsa_assignment.application.product.dto.response.CategoryProductSummaryResponse;
+import io.github.hoo47.musinsa_assignment.application.usecase.BrandLowestPriceUsecase;
 import io.github.hoo47.musinsa_assignment.application.usecase.CategoryPriceSummaryUsecase;
 import io.github.hoo47.musinsa_assignment.application.usecase.CategoryProductPriceUsecase;
 import io.github.hoo47.musinsa_assignment.common.exception.BusinessErrorCode;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -29,6 +32,9 @@ class CategoryControllerTest {
 
     @MockBean
     private CategoryProductPriceUsecase categoryProductPriceUsecase;
+
+    @MockBean
+    private BrandLowestPriceUsecase brandLowestPriceUsecase;
 
     @MockBean
     private CategoryPriceSummaryUsecase categoryPriceSummaryUsecase;
@@ -63,6 +69,34 @@ class CategoryControllerTest {
                 .andExpect(jsonPath("$.items[1].brandName").value("B브랜드"))
                 .andExpect(jsonPath("$.items[1].price").value(20000))
                 .andExpect(jsonPath("$.totalPrice").value(30000));
+    }
+
+    @Test
+    @DisplayName("단일 브랜드로 모든 카테고리 상품을 구매할 때 최저가격 브랜드와 가격을 조회할 수 있다")
+    void getLowestBrandPrice() throws Exception {
+        // given
+        var categories = Arrays.asList(
+                new BrandProductSummaryResponse.CategoryPrice("상의", new BigDecimal("10000")),
+                new BrandProductSummaryResponse.CategoryPrice("하의", new BigDecimal("20000"))
+        );
+
+        var lowestPriceInfo = new BrandProductSummaryResponse.LowestPriceInfo(
+                "C브랜드", categories, new BigDecimal("30000")
+        );
+
+        var response = new BrandProductSummaryResponse(lowestPriceInfo);
+
+        given(brandLowestPriceUsecase.getBrandWithLowestTotalPrice()).willReturn(response);
+
+        // when & then
+        mockMvc.perform(get("/api/v1/categories/lowest-brand-price"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lowestPrice.brandName").value("C브랜드"))
+                .andExpect(jsonPath("$.lowestPrice.categories[0].categoryName").value("상의"))
+                .andExpect(jsonPath("$.lowestPrice.categories[0].price").value(10000))
+                .andExpect(jsonPath("$.lowestPrice.categories[1].categoryName").value("하의"))
+                .andExpect(jsonPath("$.lowestPrice.categories[1].price").value(20000))
+                .andExpect(jsonPath("$.lowestPrice.totalPrice").value(30000));
     }
 
     @Test

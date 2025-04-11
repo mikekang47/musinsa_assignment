@@ -26,28 +26,20 @@ spring:
   # Redis 캐시 설정
   data:
     redis:
-      host: redis
+      host: localhost
       port: 6379
-      timeout: 3000         # 연결 타임아웃 (밀리초)
-      connect-timeout: 3000 # 연결 생성 타임아웃 (밀리초)
+      timeout: 1000         # 연결 타임아웃 (밀리초)
+      connect-timeout: 1000 # 연결 생성 타임아웃 (밀리초)
       client-name: musinsa-cache
       lettuce:
         pool:
           max-active: 16    # 최대 연결 수
           max-idle: 8       # 최대 유휴 연결 수
           min-idle: 4       # 최소 유휴 연결 수
-          max-wait: 1000    # 최대 대기 시간 (밀리초)
+          max-wait: 500     # 최대 대기 시간 (밀리초)
           time-between-eviction-runs: 10000  # 유휴 연결 검사 간격 (밀리초)
-        shutdown-timeout: 3000ms  # 셧다운 타임아웃 설정
   cache:
     type: redis
     redis:
       time-to-live: 60      # 캐시 항목 기본 유효시간 (초)
       cache-null-values: false
-
-logging:
-  level:
-    root: INFO
-    io.github.hoo47: DEBUG
-    org.springframework.cache: TRACE
-    org.springframework.data.redis: DEBUG
